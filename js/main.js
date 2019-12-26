@@ -8,20 +8,24 @@ const shortenButton = document.querySelector('#shorten');
 const responseField = document.querySelector('#responseField');
 
 //AJAX function
-const shortenUrl = () => {
+const shortenUrl = async () => {
     const urlToShorten = inputField.value;
-    const data = JSON.stringify({
-        destination: urlToShorten
-    });
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            renderResponse(xhr.response);
+    const data = JSON.stringify({destination: urlToShorten});
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Content-type': 'application/json',
+				'apikey': apikey
+            }
+        });
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            renderResponse(jsonResponse);
         }
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('apikey', apikey);
-        xhr.send(data);
+    } catch (error) {
+        console.log(error);
     }
 }
 
